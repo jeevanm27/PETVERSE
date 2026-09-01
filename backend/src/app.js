@@ -63,9 +63,10 @@ const defaultOrigins = [
     'http://127.0.0.1:3001',
     'http://127.0.0.1:5173'
 ];
+const normalizeOrigin = (value) => String(value).trim().replace(/\/$/, '');
 const envOrigins = [process.env.FRONTEND_URL, process.env.CLIENT_URL]
     .filter(Boolean)
-    .flatMap(v => String(v).split(',').map(s => s.trim()).filter(Boolean));
+    .flatMap(v => String(v).split(',').map(normalizeOrigin).filter(Boolean));
 const allowedOrigins = Array.from(new Set([...defaultOrigins, ...envOrigins]));
 
 const corsOptions = {
