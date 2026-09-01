@@ -122,7 +122,9 @@ app.use(session({
         secure: process.env.NODE_ENV === 'production',
         httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000, // 1 day
-        sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax'
+        // Vercel and Render are different sites, so cross-site session cookies
+        // must use SameSite=None in production.
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
     },
     name: 'petverse.sid' 
 }));
@@ -376,11 +378,7 @@ const socketIo = require('socket.io');
 const server = http.createServer(app);
 const io = socketIo(server, {
     cors: {
-        origin: [
-            process.env.FRONTEND_URL || 'http://localhost:3000',
-            'http://localhost:3001',
-            'http://localhost:5173'
-        ],
+        origin: allowedOrigins,
         credentials: true,
         methods: ['GET', 'POST']
     }
